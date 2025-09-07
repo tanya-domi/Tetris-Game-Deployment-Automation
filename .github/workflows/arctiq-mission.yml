@@ -51,11 +51,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run your custom action
-        uses: ./.github/custom-actions/npm-action
-        with:
-          path-of-folder: node_modules
-
       - name: Trivy file scan
         run: trivy fs . > trivyfs.txt
 

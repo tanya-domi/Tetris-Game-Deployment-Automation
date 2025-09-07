@@ -73,12 +73,14 @@ jobs:
          with:
           node-version: '16'
            
+     
        - name: Set CLI Config
-         run: jf npm-config --global=true \
-               --repo-resolve=local-npm-tetrisGame \
-               --repo-deploy=local-npm-tetrisGame \
-               --server-id-resolve=default \
-               --server-id-deploy=default
+         run: |
+            jf npm-config --global=true \
+              --repo-resolve=local-npm-tetrisGame \
+              --repo-deploy=local-npm-tetrisGame \
+              --server-id-resolve=default \
+              --server-id-deploy=default
            
        - name: Install Deps
          run: jf npm install

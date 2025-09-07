@@ -1,0 +1,98 @@
+name: Scan and Clean Sensitive Data
+
+on:
+  workflow_dispatch:
+
+jobs:
+  scan-commits-and-clean-hitory:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # Fetch all history for all branches and tags
+
+    - name: Set up Java
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: '11'
+        
+    - name: Set up SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+       
+
+
+    - name: Install BFG Repo-Cleaner
+      run: wget https://repo1.maven.org/maven2/com/madgag/bfg/1.14.0/bfg-1.14.0.jar -O bfg.jar
+
+    - name: Install Gitleaks
+      run: |
+        git clone https://github.com/gitleaks/gitleaks.git
+        cd gitleaks
+        make build
+        sudo mv gitleaks /usr/local/bin/gitleaks
+
+    - name: Install jq
+      run: sudo apt-get install -y jq
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Run Gitleaks scan
+      run: gitleaks detect --source . --report-format json --report-path gitleaks_report.json --verbose
+      continue-on-error: true
+
+    - name: Analyze Gitleaks report and prepare replacements
+      run: |
+        python3 - <<'EOF'
+        import json
+
+        def analyze_report(input_file, output_file):
+            with open(input_file, 'r') as infile:
+                data = json.load(infile)
+
+            replacements = []
+            for finding in data:
+                match = finding.get('Secret')
+                if match:
+                    if 'AWS' in match:
+                        placeholder = '[SENSITIVE_DATA_AWS_KEY]'
+                    elif 'API' in match:
+                        placeholder = '[SENSITIVE_DATA_API_KEY]'
+                    elif 'ACCESS KEY' in match:
+                        placeholder = '[SENSITIVE_DATA_ACCESS_KEY]'
+                    elif 'SECRET' in match:
+                        placeholder = '[SENSITIVE_DATA_SECRET_KEY]'
+                    elif 'Azure' in match:
+                        placeholder = '[SENSITIVE_DATA_AZURE_KEY]'
+                    else:
+                        placeholder = '[SENSITIVE_DATA]'
+                    replacements.append(f"{match}==>{placeholder}")
+
+            with open(output_file, 'w') as outfile:
+                outfile.write("\n".join(replacements))
+
+        analyze_report('gitleaks_report.json', 'replacements.txt')
+        EOF
+
+    - name: Replace sensitive data with BFG Repo-Cleaner
+      run: java -jar bfg.jar --replace-text replacements.txt
+
+    - name: Cleanup and force push
+      run: |
+        git reflog expire --expire=now --all && git gc --prune=now --aggressive
+        git push --force
+
+    - name: Upload Gitleaks report
+      uses: actions/upload-artifact@v2
+      with:
+        name: gitleaks-report
+        path: gitleaks_report.json

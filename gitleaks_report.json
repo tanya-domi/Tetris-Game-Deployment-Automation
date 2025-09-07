@@ -1,0 +1,22 @@
+[
+ {
+  "Description": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
+  "StartLine": 2,
+  "EndLine": 2,
+  "StartColumn": 5,
+  "EndColumn": 53,
+  "Match": "clientId\": \"[SENSITIVE_DATA]\"",
+  "Secret": "[SENSITIVE_DATA]",
+  "File": "secrets.json",
+  "SymlinkFile": "",
+  "Commit": "28ee777d86768e824df74542471ff960b0e79c6e",
+  "Entropy": 3.6042438,
+  "Author": "Josias NDAM",
+  "Email": "134744341+jndamito@users.noreply.github.com",
+  "Date": "2024-06-10T00:40:35Z",
+  "Message": "adding secret via upload",
+  "Tags": [],
+  "RuleID": "generic-api-key",
+  "Fingerprint": "28ee777d86768e824df74542471ff960b0e79c6e:secrets.json:generic-api-key:2"
+ }
+]

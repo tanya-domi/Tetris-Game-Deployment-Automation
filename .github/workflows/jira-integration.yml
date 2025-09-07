@@ -30,5 +30,6 @@ jobs:
     - name: Comment on issue
       uses: atlassian/gajira-comment@v3
       with:
-      issue: INC-2
-      comment: ${{ github.event.pusher.name }} pushed to repository: ${{ github.event.repository.full_name }}
+       issue: INC-2
+       comment: "${{ github.event.pusher.name }} pushed to repository: ${{ github.event.repository.full_name }}"
+

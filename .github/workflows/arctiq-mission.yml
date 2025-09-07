@@ -65,25 +65,17 @@ jobs:
        - name: Setup JFrog CLI
          uses: jfrog/setup-jfrog-cli@v3
          env:  
-          JF_URL: ${{ secrets.JF_URL }}
-          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+           JF_URL: ${{ secrets.JF_URL }}
+           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
            
        - name: Setup Node npm
          uses: actions/setup-node@v3
-         with:
-          node-version: '16'
            
-     
-       - name: Add JFrog Server Config
-         run: jf config add default --url=${{ secrets.JF_URL }} --access-token=${{ secrets.JF_ACCESS_TOKEN }} --interactive=false
-
-        
        - name: Set CLI Config
-         run: jf npm-config --global=true \
-                --repo-resolve=local-npm-tetrisGame \
-                --repo-deploy=local-npm-tetrisGame \
-                --server-id-resolve=default \
-                --server-id-deploy=default
+         run: jf npm-config --global=true --repo-resolve=local-npm-tetrisGame --repo-deploy=local-npm-tetrisGame
+           
+       - name: Install Deps
+         run: jf npm install
 
        - name: Install Deps
          run: jf npm install

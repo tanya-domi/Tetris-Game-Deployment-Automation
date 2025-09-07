@@ -41,7 +41,7 @@ jobs:
            node-version: '16'
           
       - name: Cache Node.js modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -104,7 +104,7 @@ jobs:
     needs: [sonar, publish-build]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Log in to JFrog
         run: |
           echo "${{ secrets.JFROG_TOKEN }}" | docker login ${{ secrets.JFROG_URL }} --username ${{ secrets.JFROG_USERNAME }} --password-stdin
@@ -123,7 +123,7 @@ jobs:
     needs: [docker-push]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Log in to JFrog
         run: |

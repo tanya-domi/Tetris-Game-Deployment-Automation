@@ -1,0 +1,154 @@
+name: Tetris Mission Pipeline
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+jobs:
+  sonar:
+    name: code quality analysis
+    runs-on: [Linux] #ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
+        with:
+          projectBaseDir: src
+          args: >
+           - Dsonar.propectkey=Tetris_Game
+           - Dsonar.propectName=Tetris_Game
+           - Dsonar.sources=.
+           - Dsonar.exclusions=**/node-modules/**,**/disk/**,**/build/**
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      
+      # If you wish to fail your job when the Quality Gate is red,  This would typically be used to fail a deployment.
+      - uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          
+      - name: npm install dependencies
+        run: npm install
+
+      - name: Trivy file scan
+        run: trivy fs . > trivyfs.txt
+
+  publish-build:
+     runs-on: [Linux]
+     needs: [sonar]
+       
+     steps:
+       - name: Checkout
+         uses: actions/checkout@v3
+         
+       - name: Setup JFrog CLI
+         uses: jfrog/setup-jfrog-cli@v3
+         env:  
+           JF_URL: ${{ secrets.JFROG_URL }}
+           JF_ACCESS_TOKEN: ${{ secrets.JFROG_TOKEN }}
+           
+       - name: Setup Node npm
+         uses: actions/setup-node@v3
+           
+       - name: Set CLI Config
+         run: jf npm-config --global=true --repo-resolve=local-npm-tetrisGame --repo-deploy=local-npm-tetrisGame
+           
+       - name: Install Deps
+         run: jf npm install
+           
+       #- name: Run tests
+         #run: npm test
+         
+       - name: Publish
+         run: jf npm publish
+         
+       - name: Publish Build info With JFrog CLI
+         run: |
+          # Collect environment variables for the build
+          jf rt build-collect-env
+          # Collect VCS details from git and add them to the build
+          jf rt build-add-git
+          # Publish build info
+          jf rt build-publish
+
+  docker-push:
+    runs-on: [Linux]
+    needs: [sonar, publish-build]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Log in to JFrog
+        run: |
+          echo "${{ secrets.JFROG_TOKEN }}" | docker login ${{ secrets.JFROG_URL }} --username ${{ secrets.JFROG_USERNAME }} --password-stdin
+      
+      - name: Build Docker image
+        run: |
+          IMAGE_TAG=${{ github.sha }}
+          docker build -t ${{ secrets.JFROG_URL }}/${{ secrets.DOCKER_REPO }}/${{ secrets.DOCKER_IMAGE_NAME }}:$IMAGE_TAG .
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ secrets.JFROG_URL }}/${{ secrets.DOCKER_REPO }}/${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+  
+  Image-scan:
+    runs-on: [Linux]
+    needs: [docker-push]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Log in to JFrog
+        run: |
+          echo "${{ secrets.JFROG_TOKEN }}" | docker login ${{ secrets.JFROG_URL }} --username ${{ secrets.JFROG_USERNAME }} --password-stdin
+          trivy image jndamito/joshrepo:arctiqgame > trivyimage.txt
+          
+      - name: Check Trivy scan result
+        run: |
+          SCAN_RESULT=$(trivy image jndamito/joshrepo:arctiqgame)
+          TRIVY_EXIT_CODE=$?
+          if [ $TRIVY_EXIT_CODE -eq 0 ]; then
+          echo "Trivy scan completed successfully."
+          else
+            if echo "$SCAN_RESULT" | grep -iqE 'CRITICAL|HIGH'; then
+            echo "Trivy scan failed with critical or high vulnerabilities."
+            exit 1
+            else
+            echo "Trivy scan passed with medium, low, or unknown vulnerabilities."
+            fi
+          
+
+  # deploy:
+  #  needs: [sonar, docker-push, Image-scan]   
+  #  runs-on: [Linux]
+  #  steps:
+  #     - name: Pull Docker image
+  #       run: |
+  #         docker pull ${{ secrets.JFROG_URL }}/${{ secrets.DOCKER_REPO }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
+
+  #     - name: Image scan
+  #       run: trivy image jndamito/joshrepo:arctiqgame > trivyimagedeploy.txt  
+  
+  #     #- name: Deploy to container
+  #       #run: docker run -d --name game -p 3000:3000 jndamito/joshrepo:arctiqgame
+
+  #     - name: Update kubeconfig
+  #       run: aws eks --region us-east-1 update-kubeconfig --name EKS_CLOUD
+
+  #     - name: Deploy to kubernetes
+  #       run: kubectl apply -f deployment.yml
+
+  #     - name: Echo Load Balancer
+  #       run: |
+  #         kubectl get svc | grep amazon | awk '{print $4}' | cat > arctiq.txt
+  #         cat arctiq.txt
+  ######
+
+

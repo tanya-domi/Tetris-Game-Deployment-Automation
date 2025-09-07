@@ -75,11 +75,9 @@ jobs:
            
      
        - name: Add JFrog Server Config
-         run: jf config add default \
-              --url=${{ secrets.JF_URL }} \
-              --access-token=${{ secrets.JF_ACCESS_TOKEN }} \
-              --interactive=false
+         run: jf config add default --url=${{ secrets.JF_URL }} --access-token=${{ secrets.JF_ACCESS_TOKEN }} --interactive=false
 
+        
        - name: Set CLI Config
          run: jf npm-config --global=true \
                 --repo-resolve=local-npm-tetrisGame \

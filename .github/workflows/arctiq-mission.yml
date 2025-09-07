@@ -154,6 +154,5 @@ jobs:
   #       run: |
   #         kubectl get svc | grep amazon | awk '{print $4}' | cat > arctiq.txt
   #         cat arctiq.txt
-  ######
-
+  #
 

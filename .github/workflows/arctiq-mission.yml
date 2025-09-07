@@ -19,12 +19,12 @@ jobs:
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
         with:
-          projectBaseDir: src
-          args: >
-           - Dsonar.propectkey=Tetris_Game
-           - Dsonar.propectName=Tetris_Game
-           - Dsonar.sources=.
-           - Dsonar.exclusions=**/node-modules/**,**/disk/**,**/build/**
+         args: >
+          -Dsonar.projectBaseDir=src
+          -Dsonar.projectKey=Tetris_Game
+          -Dsonar.projectName=Tetris_Game
+          -Dsonar.sources=.
+          -Dsonar.exclusions=**/node_modules/**,**/disk/**,**/build/**
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}

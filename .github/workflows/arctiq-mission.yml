@@ -79,8 +79,7 @@ jobs:
            jfrog --version
            
        - name: Set CLI Config
-         run: jf npm-config --global=true --repo-resolve=local-npm-tetrisGame --repo-deploy=local-npm-tetrisGame
-
+         run: jf npm-config --global=true --repo-resolve=local-npm-tetrisGame --repo-deploy=local-npm-tetrisGame --server-id-resolve=my-server --server-id-deploy=my-server
        - name: Install Deps
          run: jf npm install
          

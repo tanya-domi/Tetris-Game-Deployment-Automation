@@ -65,32 +65,33 @@ jobs:
        - name: Setup JFrog CLI
          uses: jfrog/setup-jfrog-cli@v4
          env:  
-           JF_URL: ${{ secrets.JF_URL }}
-           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
-           
+          JF_URL: ${{ secrets.JF_URL }}
+          JF_USER: ${{ secrets.JF_USER }}
+          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+
        - name: Set up Node.js
          uses: actions/setup-node@v4
          with:
-           node-version: '16'
+            node-version: '16'
 
-       - name: Install/Update JFrog CLI
-         run: |
-           curl -fL https://getcli.jfrog.io | sh
-           jfrog --version
-           
-       - name: Set CLI Config
+       - name: Configure JFrog server
+         run: jf c add my-server --url=$JF_URL --user=$JF_USER --access-token=$JF_ACCESS_TOKEN --interactive=false
+         env:
+           JF_URL: ${{ secrets.JF_URL }}
+           JFROG_USERNAME: ${{ secrets.JFROG_USERNAME }}
+           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+
+       - name: Configure npm with Artifactory
          run: jf npm-config --global=true --repo-resolve=local-npm-tetrisGame --repo-deploy=local-npm-tetrisGame --server-id-resolve=my-server --server-id-deploy=my-server
-       - name: Install Deps
+
+       - name: Install Dependencies
          run: jf npm install
-         
+
        - name: Publish Build info With JFrog CLI
          run: |
-          # Collect environment variables for the build
-          jf rt build-collect-env
-          # Collect VCS details from git and add them to the build
-          jf rt build-add-git
-          # Publish build info
-          jf rt build-publish
+           jf rt build-collect-env tetrisGame-build ${{ github.run_number }}
+           jf rt build-add-git tetrisGame-build ${{ github.run_number }}
+           jf rt build-publish tetrisGame-build ${{ github.run_number }}
 
   docker-push:
     runs-on: [Linux]

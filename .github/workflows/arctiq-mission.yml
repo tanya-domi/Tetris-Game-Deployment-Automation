@@ -72,6 +72,11 @@ jobs:
          uses: actions/setup-node@v4
          with:
            node-version: '16'
+
+       - name: Install/Update JFrog CLI
+         run: |
+           curl -fL https://getcli.jfrog.io | sh
+           jfrog --version
            
        - name: Set CLI Config
          run: jf npm-config --global=true --repo-resolve=local-npm-tetrisGame --repo-deploy=local-npm-tetrisGame

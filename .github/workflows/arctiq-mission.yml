@@ -7,6 +7,10 @@ on:
   push:
     branches:
       - main
+      
+permissions:
+  id-token: write
+
 jobs:
   sonar:
     name: code quality analysis
@@ -67,7 +71,15 @@ jobs:
          env:  
            JF_URL: ${{ secrets.JF_URL }}
            JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
-           
+       
+       - name: Setup jfrig  CLI OIDC
+         uses: jfrog/setup-jfrog-cli@v4
+         env:
+           JF_URL: ${{ secrets.JF_URL }} 
+         with:
+          oidc-provider-name: github-jfrog 
+          oidc-audience: dominic12
+       
        - name: Setup Node npm
          uses: actions/setup-node@v4
            
@@ -166,9 +178,4 @@ jobs:
 # Adding Permission Settings is required
 # The attribute id-token: write must be included in the GitHub Actions workflows Permission section. Learn more
 
-- uses: jfrog/setup-jfrog-cli@v4
-    env:
-        JF_URL: ${{ARTIFACTORY_URL}} 
-    with:
-        oidc-provider-name: github-jfrog 
-        
+

@@ -1,4 +1,4 @@
-name: Tetris Mission Pipeline
+name: JFrog NPM Integration Example
 on:
   workflow_dispatch:
   pull_request:
@@ -65,33 +65,32 @@ jobs:
        - name: Setup JFrog CLI
          uses: jfrog/setup-jfrog-cli@v4
          env:  
-          JF_URL: ${{ secrets.JF_URL }}
-          JF_USER: ${{ secrets.JF_USER }}
-          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
-
-       - name: Set up Node.js
-         uses: actions/setup-node@v4
-         with:
-            node-version: '16'
-
-       - name: Configure JFrog server
-         run: jf c add my-server --url=$JF_URL --user=$JF_USER --access-token=$JF_ACCESS_TOKEN --interactive=false
-         env:
            JF_URL: ${{ secrets.JF_URL }}
-           JFROG_USERNAME: ${{ secrets.JFROG_USERNAME }}
            JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
-
-       - name: Configure npm with Artifactory
-         run: jf npm-config --global=true --repo-resolve=local-npm-tetrisGame --repo-deploy=local-npm-tetrisGame --server-id-resolve=my-server --server-id-deploy=my-server
-
-       - name: Install Dependencies
+           
+       - name: Setup Node npm
+         uses: actions/setup-node@v4
+           
+       - name: Set CLI Config
+         run: jf npm-config --global=true --repo-resolve=arctiq-npm --repo-deploy=arctiq-npm
+           
+       - name: Install Deps
          run: jf npm install
-
+           
+       #- name: Run tests
+         #run: npm test
+         
+       - name: Publish
+         run: jf npm publish
+         
        - name: Publish Build info With JFrog CLI
          run: |
-           jf rt build-collect-env tetrisGame-build ${{ github.run_number }}
-           jf rt build-add-git tetrisGame-build ${{ github.run_number }}
-           jf rt build-publish tetrisGame-build ${{ github.run_number }}
+          # Collect environment variables for the build
+          jf rt build-collect-env
+          # Collect VCS details from git and add them to the build
+          jf rt build-add-git
+          # Publish build info
+          jf rt build-publish
 
   docker-push:
     runs-on: [Linux]
@@ -164,4 +163,12 @@ jobs:
   #         kubectl get svc | grep amazon | awk '{print $4}' | cat > arctiq.txt
   #         cat arctiq.txt
   #
+# Adding Permission Settings is required
+# The attribute id-token: write must be included in the GitHub Actions workflows Permission section. Learn more
 
+- uses: jfrog/setup-jfrog-cli@v4
+    env:
+        JF_URL: ${{ARTIFACTORY_URL}} 
+    with:
+        oidc-provider-name: github-jfrog 
+        

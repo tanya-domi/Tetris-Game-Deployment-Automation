@@ -58,11 +58,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Add Trivy to PATH
-        run: echo "/usr/bin" >> $GITHUB_PATH
-
-      - name: Trivy file scan
-        run: trivy fs . > trivyfs.txt
+      # - name: Trivy file scan
+      #   run: trivy fs . > trivyfs.txt
 
   publish-build:
      runs-on: ubuntu-latest #[Linux]

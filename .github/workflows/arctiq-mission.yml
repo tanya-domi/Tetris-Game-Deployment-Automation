@@ -65,6 +65,11 @@ jobs:
      steps:
        - name: Checkout
          uses: actions/checkout@v3
+
+       - name: Setup Node.js
+         uses: actions/setup-node@v4
+         with:
+           node-version: 16
        
        - name: Setup jfrig  CLI OIDC
          uses: jfrog/setup-jfrog-cli@v4
@@ -83,13 +88,13 @@ jobs:
        - name: Set CLI Config
          run: jf npm-config --global=true --repo-resolve=tetris-game --repo-deploy=tetris-game
            
-       - name: Install Deps
+       - name: Install Dependencies
          run: jf npm install
            
        #- name: Run tests
          #run: npm test
          
-       - name: Publish
+       - name: Publish p
          run: jf npm publish
          
        - name: Publish Build info With JFrog CLI

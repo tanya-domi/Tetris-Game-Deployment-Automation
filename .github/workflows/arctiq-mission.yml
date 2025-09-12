@@ -1,4 +1,4 @@
-name: JFrog NPM Integration Example
+name: "JFrog NPM Integration Tetris_Game"
 on:
   workflow_dispatch:
   pull_request:
@@ -65,26 +65,23 @@ jobs:
      steps:
        - name: Checkout
          uses: actions/checkout@v3
-         
-       - name: Setup JFrog CLI
-         uses: jfrog/setup-jfrog-cli@v4
-         env:  
-           JF_URL: ${{ secrets.JF_URL }}
-           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
        
        - name: Setup jfrig  CLI OIDC
          uses: jfrog/setup-jfrog-cli@v4
+         id: setup-cli
          env:
-           JF_URL: ${{ secrets.JF_URL }} 
+           JF_URL: http://${{ vars.JF_URL }}/ 
+           # Required for uploading code scanning
+           JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
          with:
           oidc-provider-name: github-jfrog 
-          oidc-audience: dominic12
-       
+          oidc-audience: my-aud
+
        - name: Setup Node npm
          uses: actions/setup-node@v4
            
        - name: Set CLI Config
-         run: jf npm-config --global=true --repo-resolve=arctiq-npm --repo-deploy=arctiq-npm
+         run: jf npm-config --global=true --repo-resolve=tetris-game --repo-deploy=tetris-game
            
        - name: Install Deps
          run: jf npm install
@@ -104,50 +101,57 @@ jobs:
           # Publish build info
           jf rt build-publish
 
-  docker-push:
-    runs-on: [Linux]
-    needs: [sonar, publish-build]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Log in to JFrog
-        run: |
-          echo "${{ secrets.JF_ACCESS_TOKEN }}" | docker login ${{ secrets.JF_URL }} --username ${{ secrets.JFROG_USERNAME }} --password-stdin
-      
-      - name: Build Docker image
-        run: |
-          IMAGE_TAG=${{ github.sha }}
-          docker build -t ${{ secrets.JF_URL }}/${{ secrets.DOCKER_REPO }}/${{ secrets.DOCKER_IMAGE_NAME }}:$IMAGE_TAG .
+  # docker-push:
+  #   runs-on: [Linux]
+  #   needs: [sonar, publish-build]
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
 
-      - name: Push Docker image
-        run: |
-          docker push ${{ secrets.JF_URL }}/${{ secrets.DOCKER_REPO }}/${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+  #     - name: Setup JFrog CLI with OIDC
+  #       uses: jfrog/setup-jfrog-cli@v4
+  #       id: setup-cli
+  #       env:
+  #         JF_URL: ${{ vars.JF_URL }}
+  #         JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       with:
+  #         oidc-provider-name: github-jfrog
+  #         oidc-audience: my-aud
+        
+  #     - name: Build Docker image
+  #       run: |
+  #         IMAGE_TAG=${{ github.sha }}
+  #         docker build -t ${{ secrets.JF_URL }}/${{ secrets.DOCKER_REPO }}/${{ secrets.DOCKER_IMAGE_NAME }}:$IMAGE_TAG .
+
+  #     - name: Push Docker image
+  #       run: |
+  #         docker push ${{ secrets.JF_URL }}/${{ secrets.DOCKER_REPO }}/${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
   
-  Image-scan:
-    runs-on: [Linux]
-    needs: [docker-push]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  # Image-scan:
+  #   runs-on: [Linux]
+  #   needs: [docker-push]
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Log in to JFrog
-        run: |
-          echo "${{ secrets.JFROG_TOKEN }}" | docker login ${{ secrets.JFROG_URL }} --username ${{ secrets.JFROG_USERNAME }} --password-stdin
-          trivy image jndamito/joshrepo:arctiqgame > trivyimage.txt
+  #     - name: Log in to JFrog
+  #       run: |
+  #         echo "${{ secrets.JFROG_TOKEN }}" | docker login ${{ secrets.JFROG_URL }} --username ${{ secrets.JFROG_USERNAME }} --password-stdin
+  #         trivy image jndamito/joshrepo:arctiqgame > trivyimage.txt
           
-      - name: Check Trivy scan result
-        run: |
-          SCAN_RESULT=$(trivy image jndamito/joshrepo:arctiqgame)
-          TRIVY_EXIT_CODE=$?
-          if [ $TRIVY_EXIT_CODE -eq 0 ]; then
-          echo "Trivy scan completed successfully."
-          else
-            if echo "$SCAN_RESULT" | grep -iqE 'CRITICAL|HIGH'; then
-            echo "Trivy scan failed with critical or high vulnerabilities."
-            exit 1
-            else
-            echo "Trivy scan passed with medium, low, or unknown vulnerabilities."
-            fi
+  #     - name: Check Trivy scan result
+  #       run: |
+  #         SCAN_RESULT=$(trivy image jndamito/joshrepo:arctiqgame)
+  #         TRIVY_EXIT_CODE=$?
+  #         if [ $TRIVY_EXIT_CODE -eq 0 ]; then
+  #         echo "Trivy scan completed successfully."
+  #         else
+  #           if echo "$SCAN_RESULT" | grep -iqE 'CRITICAL|HIGH'; then
+  #           echo "Trivy scan failed with critical or high vulnerabilities."
+  #           exit 1
+  #           else
+  #           echo "Trivy scan passed with medium, low, or unknown vulnerabilities."
+  #           fi
           
 
   # deploy:

@@ -5,7 +5,7 @@
 	"keywords": [],
 	"main": "src/index.js",
 	"homepage": "http://mpirescarvalho.github.io/react-tetris",  
-  "publishConfig":{"registry":"http://56.228.42.52:8081/artifactory/api/npm/local-npm-tetrisGame/"},
+  "publishConfig":{"registry":"http://13.60.222.238:8081/artifactory/api/npm/tetris-game/"},
 	"dependencies": {
 		"arrow-keys-react": "1.0.6",
 		"color": "^3.1.2",

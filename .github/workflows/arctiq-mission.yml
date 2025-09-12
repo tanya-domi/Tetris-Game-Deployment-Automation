@@ -88,7 +88,8 @@ jobs:
        
        - name: Configure JFrog CLI Server
          run: |
-            jf config add artifactory-oidc --url=${{ vars.JF_URL }} --interactive=false --oidc --oidc-provider-name=github-jfrog --oidc-audience=my-aud
+            jf config add artifactory-oidc --url http://13.60.222.238:8082 --interactive=false --oidc --oidc-provider-name github-jfrog --oidc-audience my-aud
+
 
 
        - name: Setup Node npm

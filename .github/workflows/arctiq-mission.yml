@@ -188,6 +188,6 @@ jobs:
   #         cat arctiq.txt
   #
 # Adding Permission Settings is required
-# The attribute id-token: write must be included in the GitHub Actions workflows Permission section. Learn more
+## The attribute id-token: write must be included in the GitHub Actions workflows Permission section. Learn more
 
 

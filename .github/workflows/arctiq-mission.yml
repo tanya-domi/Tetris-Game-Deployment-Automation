@@ -14,7 +14,7 @@ permissions:
 jobs:
   sonar:
     name: code quality analysis
-    runs-on: [Linux] #ubuntu-latest
+    runs-on: ubuntu-latest #[Linux] 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -59,7 +59,7 @@ jobs:
         run: trivy fs . > trivyfs.txt
 
   publish-build:
-     runs-on: [Linux]
+     runs-on: ubuntu-latest #[Linux]
      needs: [sonar]
        
      steps:

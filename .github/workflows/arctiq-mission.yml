@@ -82,6 +82,11 @@ jobs:
           oidc-provider-name: github-jfrog 
           oidc-audience: my-aud
 
+       
+       - name: Configure JFrog CLI Server
+         run: |
+            jf config add --interactive=false --server-id=artifactory-oidc --url=${{ vars.JF_URL }} --oidc
+
        - name: Setup Node npm
          uses: actions/setup-node@v4
            
@@ -89,7 +94,7 @@ jobs:
          run: jf npm-config --global=true --repo-resolve=tetris-game --repo-deploy=tetris-game
            
        - name: Install Dependencies
-         run: jf npm install
+         run: jf npm install --server-id=artifactory-oidc
            
        #- name: Run tests
          #run: npm test

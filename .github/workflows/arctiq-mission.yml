@@ -89,7 +89,7 @@ jobs:
            
        - name: Set CLI Config
          run: |
-            jf npm-config --repo virtual-tetris-game --global
+            jf npm-config --global --repo-resolve virtual-tetris-game --repo-deploy tetris-game
         #jf npm-config --global=true --repo-resolve=tetris-game --repo-deploy=tetris-game
 
            

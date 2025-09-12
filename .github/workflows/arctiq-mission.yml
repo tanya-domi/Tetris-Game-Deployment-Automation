@@ -88,16 +88,13 @@ jobs:
          uses: actions/setup-node@v4
            
        - name: Set CLI Config
-         run: jf npm-config --global=true --repo-resolve=tetris-game --repo-deploy=tetris-game
-
-       - name: Configure npm for JFrog with OIDC
          run: |
-           jf npm config add --repo tetris-game --scope=@my-org
-
+            jf npm-config --global=true --repo-resolve=tetris-game --repo-deploy=tetris-game
 
            
        - name: Install Dependencies
-         run: jf npm install 
+         run: |
+            jf npm install --repo tetris-game
            
        #- name: Run tests
          #run: npm test

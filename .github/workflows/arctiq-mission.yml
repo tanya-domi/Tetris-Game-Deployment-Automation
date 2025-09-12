@@ -92,7 +92,8 @@ jobs:
 
        - name: Configure npm for JFrog with OIDC
          run: |
-           jf npm config add --repo tetris-game 
+           jf npm config add --repo tetris-game --scope=@my-org
+
 
            
        - name: Install Dependencies

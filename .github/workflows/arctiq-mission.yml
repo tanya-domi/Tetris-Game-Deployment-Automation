@@ -72,7 +72,7 @@ jobs:
          env:
            JF_URL: http://13.60.241.167:8082 #http://${{ vars.JF_URL }}/ 
            # Required for uploading code scanning
-           JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+           JF_GIT_TOKEN: ${{ secrets._GITHUB_TOKEN }}
          with:
           oidc-provider-name: github-jfrog 
           oidc-audience: my-aud

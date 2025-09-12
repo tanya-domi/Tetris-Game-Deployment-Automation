@@ -9,7 +9,10 @@ on:
       - main
       
 permissions:
-  id-token: write
+  actions: read # for detecting the Github actions environment.
+  id-token: write # for creating OIDC tokens for signing
+  packages: write # for uploading attestions
+  contents: read 
 
 jobs:
   sonar:
@@ -85,7 +88,8 @@ jobs:
        
        - name: Configure JFrog CLI Server
          run: |
-            jf config add --interactive=false --server-id=artifactory-oidc --url=${{ vars.JF_URL }} --oidc
+            jf config add artifactory-oidc --url=${{ vars.JF_URL }} --interactive=false --oidc --oidc-provider-name=github-jfrog --oidc-audience=my-aud
+
 
        - name: Setup Node npm
          uses: actions/setup-node@v4

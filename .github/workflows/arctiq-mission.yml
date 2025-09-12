@@ -89,7 +89,8 @@ jobs:
            
        - name: Set CLI Config
          run: |
-            jf npm-config --global=true --repo-resolve=tetris-game --repo-deploy=tetris-game
+            jf npm-config --repo tetris-game-virtual --global
+        #jf npm-config --global=true --repo-resolve=tetris-game --repo-deploy=tetris-game
 
            
        - name: Install Dependencies

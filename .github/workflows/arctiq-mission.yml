@@ -95,7 +95,7 @@ jobs:
            
        - name: Install Dependencies
          run: |
-            jf npm install --repo tetris-game
+            jf npm install 
            
        #- name: Run tests
          #run: npm test

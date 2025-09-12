@@ -55,8 +55,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Trivy file scan
-        run: trivy fs . > trivyfs.txt
+      # - name: Trivy file scan
+      #   run: trivy fs . > trivyfs.txt
 
   publish-build:
      runs-on: ubuntu-latest #[Linux]
@@ -81,13 +81,6 @@ jobs:
          with:
           oidc-provider-name: github-jfrog 
           oidc-audience: my-aud
-
-       - name: Debug connectivity to Artifactory
-         run: |
-           echo "Pinging Artifactory..."
-           curl -v http://13.60.222.238:8082/artifactory/api/system/version || true
-           curl -v http://13.60.222.238:8082/api/system/version || true
-           ping -c 3 13.60.222.238 || true
 
        - name: Setup Node npm
          uses: actions/setup-node@v4

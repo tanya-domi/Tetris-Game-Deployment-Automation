@@ -58,8 +58,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # - name: Trivy file scan
-      #   run: trivy fs . > trivyfs.txt
+      - name: Trivy file scan
+        run: trivy fs . > trivyfs.txt
 
   publish-build:
      runs-on: ubuntu-latest #[Linux]
@@ -79,8 +79,7 @@ jobs:
          id: setup-cli
          env:
            JF_URL: ${{ vars.JF_URL }}
-           # Required for uploading code scanning
-           JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+           JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Required for uploading code scanning
          with:
           oidc-provider-name: github-jfrog 
           oidc-audience: my-aud
@@ -90,6 +89,11 @@ jobs:
            
        - name: Set CLI Config
          run: jf npm-config --global=true --repo-resolve=tetris-game --repo-deploy=tetris-game
+
+       - name: Configure npm for JFrog with OIDC
+         run: |
+           jf npm config add --repo tetris-game 
+
            
        - name: Install Dependencies
          run: jf npm install 

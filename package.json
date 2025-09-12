@@ -7,7 +7,6 @@
 	"homepage": "http://mpirescarvalho.github.io/react-tetris",  
   "publishConfig":{"registry":"http://13.60.26.244:8081/artifactory/api/npm/tetris-game/"},
 	"dependencies": {
-		"arrow-keys-react": "1.0.6",
 		"color": "^3.1.2",
 		"react": "16.12.0",
 		"react-dom": "16.12.0",

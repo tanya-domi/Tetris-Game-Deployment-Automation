@@ -94,7 +94,7 @@ jobs:
            
        - name: Set CLI Config
          run: | #jf npm-config --global=true --repo-resolve=arctiq-npm --repo-deploy=arctiq-npm
-           jf config add my-server --url=$JF_URL --interactive=false
+           jf config add my-server --url=$JF_URL --interactive=false --oidc-token-id="${{ steps.jf-cli.outputs.oidc-token }}"
            jf npm-config --repo-resolve=$VIRTUAL_REPO --repo-deploy=$LOCAL_REPO --server-id-resolve=my-server --server-id-deploy=my-server           
        
        - name: Install Deps

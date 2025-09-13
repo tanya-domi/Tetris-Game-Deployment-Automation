@@ -174,32 +174,45 @@ jobs:
           jf rt build-publish "${{ env.IMAGE_NAME }}" $GITHUB_RUN_NUMBER
 
 
-    
-  #   runs-on: [Linux]
-  #   needs: [docker-push]
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
+    runs-on: [Linux]
+    needs: [docker-push]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-  #     - name: Log in to JFrog
-  #       run: |
-  #         echo "${{ secrets.JFROG_TOKEN }}" | docker login ${{ secrets.JFROG_URL }} --username ${{ secrets.JFROG_USERNAME }} --password-stdin
-  #         trivy image jndamito/joshrepo:arctiqgame > trivyimage.txt
+      - name: Setup JFrog CLI with OIDC
+        uses: jfrog/setup-jfrog-cli@v4
+        id: setup-cli
+        env:
+          JF_URL: ${{ vars.JF_URL }}
+          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          oidc-provider-name: github-jfrog
+          oidc-audience: my-aud
+
+      - name: Log in to JFrog
+        run: |
+          jf rt docker-login my-server dominic-docker
+
+      - name: Scan Docker image with Trivy
+        run: |
+          IMAGE="${{ secrets.DOCKER_IMAGE }}"
+          trivy image $IMAGE > trivyimage.txt || true
           
-  #     - name: Check Trivy scan result
-  #       run: |
-  #         SCAN_RESULT=$(trivy image jndamito/joshrepo:arctiqgame)
-  #         TRIVY_EXIT_CODE=$?
-  #         if [ $TRIVY_EXIT_CODE -eq 0 ]; then
-  #         echo "Trivy scan completed successfully."
-  #         else
-  #           if echo "$SCAN_RESULT" | grep -iqE 'CRITICAL|HIGH'; then
-  #           echo "Trivy scan failed with critical or high vulnerabilities."
-  #           exit 1
-  #           else
-  #           echo "Trivy scan passed with medium, low, or unknown vulnerabilities."
-  #           fi
-  #
+      - name: Check Trivy scan result
+        run: |
+          SCAN_RESULT=$(cat trivyimage.txt)
+          TRIVY_EXIT_CODE=$?
+          if [ $TRIVY_EXIT_CODE -eq 0 ]; then
+          echo "Trivy scan completed successfully."
+          else
+            if echo "$SCAN_RESULT" | grep -iqE 'CRITICAL|HIGH'; then
+            echo "Trivy scan failed with critical or high vulnerabilities."
+            exit 1
+            else
+            echo "Trivy scan passed with medium, low, or unknown vulnerabilities."
+            fi
+  
 
   # deploy:
   #  needs: [sonar, docker-push, Image-scan]   

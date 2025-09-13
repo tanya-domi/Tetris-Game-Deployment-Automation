@@ -173,7 +173,7 @@ jobs:
           jf rt build-add-git
           jf rt build-publish "${{ env.IMAGE_NAME }}" $GITHUB_RUN_NUMBER
 
-   Image-scan:
+  Image-scan:
     runs-on: [Linux]
     needs: [docker-push]
     steps:

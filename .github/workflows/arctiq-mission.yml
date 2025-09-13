@@ -94,7 +94,7 @@ jobs:
        - name: Configure JFrog NPM
          run: |
            jf c add my-artifactory-server --url=$JF_URL --access-token=${{ secrets.GITHUB_TOKEN }} --interactive=false
-           jf npm-config --global --repo-resolve=$VIRTUAL_REPO --repo-deploy=$LOCAL_REPO --server-id-resolve=my-artifactory-server --server-id-deploy=my-artifactory-server
+           jf npm-config --global --repo-resolve=$VIRTUAL_REPO --repo-deploy=$LOCAL_REPO --server-id-resolve=my-server --server-id-deploy=my-server
 
            
       #  - name: Set CLI Config

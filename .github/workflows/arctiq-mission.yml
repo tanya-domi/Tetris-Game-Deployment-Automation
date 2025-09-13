@@ -92,6 +92,12 @@ jobs:
        - name: Setup Node npm
          uses: actions/setup-node@v4
 
+      - name: Debug OIDC Token
+        run: echo OIDC Token: ${{ steps.setup-cli.outputs.oidc-token }}
+
+      - name: List JFrog CLI Configuration
+        run: jf config show
+
        - uses: jfrog/setup-jfrog-cli@v4
          id: jf-cli
          with:

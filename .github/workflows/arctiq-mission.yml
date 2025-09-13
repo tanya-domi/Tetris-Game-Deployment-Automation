@@ -74,6 +74,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Debug JFrog CLI Configuration
+        run: jf config show
+
       - name: Setup JFrog CLI OIDC
         uses: jfrog/setup-jfrog-cli@v4
         id: setup-cli

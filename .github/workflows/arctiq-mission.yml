@@ -36,7 +36,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       
-      # If you wish to fail your job when the Quality Gate is red,  This would typically be used to fail a deployment.
+      # If you wish to fail your job when the Quality Gate parameters are not met, This would typically be used to fail a deployment.
       # - uses: sonarsource/sonarqube-quality-gate-action@master
       #   timeout-minutes: 5
       #   env:
@@ -58,8 +58,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # - name: Trivy file scan
-      #   run: trivy fs . > trivyfs.txt
+      - name: Trivy file scan
+        run: trivy fs . > trivyfs.txt
 
   publish-build:
     runs-on: ubuntu-latest #[Linux]

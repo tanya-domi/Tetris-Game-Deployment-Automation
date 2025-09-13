@@ -86,6 +86,8 @@ jobs:
           oidc: true
 
       - name: Configure JFrog CLI
+        env:
+          JFROG_CLI_OIDC_EXCHANGE_TOKEN_ID: ${{ steps.jf-cli.outputs.oidc-token }}
         run: |
           jf config add my-server --url=$JF_URL --interactive=false --oidc-token-id="${{ steps.jf-cli.outputs.oidc-token }}"
           jf npm-config --repo-resolve=$VIRTUAL_REPO --repo-deploy=$LOCAL_REPO --server-id-resolve=my-server --server-id-deploy=my-server

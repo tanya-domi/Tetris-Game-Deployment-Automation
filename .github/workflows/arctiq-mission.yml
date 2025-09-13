@@ -91,7 +91,7 @@ jobs:
           JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Debug OIDC Token
-        run: echo "OIDC Token: ${{ steps.setup-cli.outputs.oidc-token }}"
+        run: echo OIDC Token: ${{ steps.setup-cli.outputs.oidc-token }}
 
       - name: List JFrog CLI Configuration
         run: jf config show

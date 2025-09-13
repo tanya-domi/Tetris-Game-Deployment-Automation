@@ -64,11 +64,11 @@ jobs:
   publish-build:
     runs-on: [Linux]
     needs: [sonar]
-    env:
-       JF_URL: ${{ vars.JF_URL }}
-       LOCAL_REPO: tetris-game
-       VIRTUAL_REPO: virtual-tetris-game
-       JFROG_CLI_LOG_LEVEL: DEBUG
+    # env:
+    #    JF_URL: ${{ vars.JF_URL }}
+    #    LOCAL_REPO: tetris-game
+    #    VIRTUAL_REPO: virtual-tetris-game
+    #    JFROG_CLI_LOG_LEVEL: DEBUG
        
     steps:
       - name: Checkout

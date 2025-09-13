@@ -103,9 +103,10 @@ jobs:
           --server-id-resolve=my-server \
           --server-id-deploy=my-server
 
-    - name: Install Dependencies
-      run: |
-        jf npm install
+      - name: Install Dependencies
+        run: |
+          jf npm install
+
            
        #- name: Run tests
          #run: npm test

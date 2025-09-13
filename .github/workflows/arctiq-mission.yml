@@ -148,13 +148,14 @@ jobs:
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
-        id: build
         with:
-           push: true
-           context: .
-           #platforms: linux/amd64,linux/arm64
-           tags: ${{ secrets.DOCKER_REGISTRY }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}:latest
-           provenance: false
+        context: .
+        push: true
+        tags: |
+          ${{ secrets.DOCKER_REGISTRY }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}:latest
+          ${{ secrets.DOCKER_REGISTRY }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        provenance: false
+
         
       - name: Add docker package to JFrog build info
         run: |

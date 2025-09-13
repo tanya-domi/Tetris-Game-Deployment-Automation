@@ -64,12 +64,7 @@ jobs:
   publish-build:
     runs-on: [Linux]
     needs: [sonar]
-    # env:
-    #    JF_URL: ${{ vars.JF_URL }}
-    #    LOCAL_REPO: tetris-game
-    #    VIRTUAL_REPO: virtual-tetris-game
-    #    JFROG_CLI_LOG_LEVEL: DEBUG
-       
+ 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -96,9 +91,6 @@ jobs:
           
       - name: Install Deps
         run: jf npm install
-           
-       #- name: Run tests
-         #run: npm test
          
       - name: Publish
         run: jf npm publish
@@ -112,33 +104,77 @@ jobs:
           # Publish build info
           jf rt build-publish
 
-  # docker-push:
-  #   runs-on: [Linux]
-  #   needs: [sonar, publish-build]
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
+  docker-push:
+    runs-on: [Linux]
+    needs: [sonar, publish-build]
+     env:
+      DOCKER_REPO: dominic-docker
+      IMAGE_NAME: tetris-mission-game
+      JF_URL: ${{ vars.JF_URL }}
+      DOCKER_BUILD_SUMMARY: false
+      DOCKER_BUILD_RECORD_UPLOAD: false
+      JFROG_CLI_LOG_LEVEL: DEBUG
 
-  #     - name: Setup JFrog CLI with OIDC
-  #       uses: jfrog/setup-jfrog-cli@v4
-  #       id: setup-cli
-  #       env:
-  #         JF_URL: ${{ vars.JF_URL }}
-  #         JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       with:
-  #         oidc-provider-name: github-jfrog
-  #         oidc-audience: my-aud
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: Setup JFrog CLI with OIDC
+        uses: jfrog/setup-jfrog-cli@v4
+        id: setup-cli
+        env:
+          JF_URL: ${{ vars.JF_URL }}
+          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          oidc-provider-name: github-jfrog
+          oidc-audience: my-aud
         
-  #     - name: Build Docker image
-  #       run: |
-  #         IMAGE_TAG=${{ github.sha }}
-  #         docker build -t ${{ secrets.JF_URL }}/${{ secrets.DOCKER_REPO }}/${{ secrets.DOCKER_IMAGE_NAME }}:$IMAGE_TAG .
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
 
-  #     - name: Push Docker image
-  #       run: |
-  #         docker push ${{ secrets.JF_URL }}/${{ secrets.DOCKER_REPO }}/${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
-  
-  # Image-scan:
+      - name: Authenticate Docker
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ vars.JF_URL }}
+          username: ${{ steps.setup-cli.outputs.oidc-user }}
+          password: ${{ steps.setup-cli.outputs.oidc-token }}
+
+      - name: Build the Docker image
+        uses: docker/build-push-action@v6
+        id: build
+        with:
+          push: true
+          context: .
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ vars.JF_URL }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}
+          provenance: false
+        
+      # - name: Generate docker attestation
+      #   if: ${{ false }}
+      #   uses: actions/attest-build-provenance@v1
+      #   with:
+      #     subject-name: ${{ vars.JF_URL }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}
+      #     subject-digest: ${{ steps.build.outputs.digest }}
+      #     push-to-registry: false
+        
+      # - name: docker scan
+      #   if: ${{ true }}
+      #   run: |
+      #      jf docker pull ${{ vars.JF_URL }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}:latest
+      #      jf docker scan ${{ vars.JF_URL }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}:latest --vuln  --fail=false
+
+      - name: add docker package to build
+        run: |
+           echo "${{ vars.JF_URL }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}" > metadata.json
+           jf rt build-docker-create ${{ env.DOCKER_REPO }} --image-file metadata.json
+           
+      - name: publish build info
+        run: |
+           jf rt build-collect-env
+           jf rt build-add-git
+           jf rt build-publish
+
+
   #   runs-on: [Linux]
   #   needs: [docker-push]
   #   steps:

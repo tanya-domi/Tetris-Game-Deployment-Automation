@@ -60,7 +60,7 @@ jobs:
 
       - name: Trivy file scan
         run: trivy fs . > trivyfs.txt
-
+        
   publish-build:
   runs-on: ubuntu-latest
   needs: [sonar]
@@ -68,7 +68,7 @@ jobs:
     JF_URL: ${{ vars.JF_URL }}
     LOCAL_REPO: tetris-game
     VIRTUAL_REPO: virtual-tetris-game
-    
+
   steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -77,7 +77,7 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 16
-    
+
     - name: Setup JFrog CLI OIDC
       uses: jfrog/setup-jfrog-cli@v4
       id: setup-cli
@@ -93,18 +93,16 @@ jobs:
         jf config add my-server --artifactory-url=$JF_URL --auth-type=oidc --interactive=false
         jf npm-config --repo-resolve=$VIRTUAL_REPO --repo-deploy=$LOCAL_REPO --server-id-resolve=my-server --server-id-deploy=my-server
 
-
     - name: Install Dependencies
-      run: |
-        jf npm install
-           
-    #- name: Run tests
-       #run: npm test
-         
-    - name: Publish p
+      run: jf npm install
+
+    # - name: Run tests
+    #   run: npm test
+
+    - name: Publish package
       run: jf npm publish
-         
-    - name: Publish Build info With JFrog CLI
+
+    - name: Publish Build Info With JFrog CLI
       run: |
         jf rt build-collect-env
         jf rt build-add-git

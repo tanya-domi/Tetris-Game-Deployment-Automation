@@ -201,18 +201,18 @@ jobs:
       - name: Check Trivy scan result
       - name: Check Trivy scan result
         run: |
-        SCAN_RESULT=$(cat trivyimage.txt)
-        TRIVY_EXIT_CODE=$?
-        if [ $TRIVY_EXIT_CODE -eq 0 ]; then
-           echo "Trivy scan completed successfully."
-        else
-          if echo "$SCAN_RESULT" | grep -iqE 'CRITICAL\|HIGH'; then
-            echo "Trivy scan failed with critical or high vulnerabilities."
-            exit 1
+          SCAN_RESULT=$(cat trivyimage.txt)
+          TRIVY_EXIT_CODE=$?
+          if [ $TRIVY_EXIT_CODE -eq 0 ]; then
+             echo "Trivy scan completed successfully."
           else
-            echo "Trivy scan passed with medium, low, or unknown vulnerabilities."
-         fi
-       fi
+            if echo "$SCAN_RESULT" | grep -iqE 'CRITICAL\|HIGH'; then
+              echo "Trivy scan failed with critical or high vulnerabilities."
+              exit 1
+           else
+             echo "Trivy scan passed with medium, low, or unknown vulnerabilities."
+          fi
+        fi
 
 
   # deploy:

@@ -16,7 +16,7 @@ permissions:
 
 env:
   DOCKER_REPO: dominic-docker
-  IMAGE_NAME: tetris-mission-game
+  IMAGE_NAME: tetris-game
   JF_URL: ${{ secrets.JF_URL }}  # Use secrets for sensitive data
   DOCKER_BUILD_SUMMARY: false
   DOCKER_BUILD_RECORD_UPLOAD: false
@@ -223,4 +223,4 @@ jobs:
   #
 # Adding Permission Settings is required
 # The attribute id-tokon: write must be included in the GitHub Actions workflows Permission section. Learn more
-###
+#### 

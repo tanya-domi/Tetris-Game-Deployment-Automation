@@ -103,7 +103,7 @@ jobs:
           jf rt build-add-git
           # Publish build info
           jf rt build-publish
-          
+
   docker-push:
   runs-on: [Linux]
   needs: [sonar, publish-build]
@@ -159,6 +159,7 @@ jobs:
         jf rt build-collect-env
         jf rt build-add-git
         jf rt build-publish tetris-mission-game $GITHUB_RUN_NUMBER
+
 
     
   #   runs-on: [Linux]

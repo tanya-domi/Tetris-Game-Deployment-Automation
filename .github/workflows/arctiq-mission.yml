@@ -88,7 +88,7 @@ jobs:
            
        - name: Set CLI Config
          run: | #jf npm-config --global=true --repo-resolve=arctiq-npm --repo-deploy=arctiq-npm
-           jf config add my-server --artifactory-url=$JF_URL --auth-type=oidc --interactive=false
+           jf config add my-server  --url=$JF_URL --oidc-provider-name=github-jfrog --oidc-audience=my-aud --interactive=false
            jf npm-config --repo-resolve=$VIRTUAL_REPO --repo-deploy=$LOCAL_REPO --server-id-resolve=my-server --server-id-deploy=my-server           
        
        - name: Install Deps

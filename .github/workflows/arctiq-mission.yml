@@ -58,63 +58,63 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # - name: Trivy file scan
-      #   run: trivy fs . > trivyfs.txt
+      - name: Trivy file scan
+        run: trivy fs . > trivyfs.txt
 
   publish-build:
-     runs-on: ubuntu-latest #[Linux]
-     needs: [sonar]
-     env:
-       JF_URL: ${{ vars.JF_URL }}
-       LOCAL_REPO: tetris-game
-       VIRTUAL_REPO: virtual-tetris-game
-       
-     steps:
-       - name: Checkout
-         uses: actions/checkout@v3
+  runs-on: ubuntu-latest
+  needs: [sonar]
+  env:
+    JF_URL: ${{ vars.JF_URL }}
+    LOCAL_REPO: tetris-game
+    VIRTUAL_REPO: virtual-tetris-game
+    
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
 
-       - name: Setup Node.js
-         uses: actions/setup-node@v4
-         with:
-           node-version: 16
-       
-       - name: Setup jfrig  CLI OIDC
-         uses: jfrog/setup-jfrog-cli@v4
-         id: setup-cli
-         env:
-           JF_URL: ${{ vars.JF_URL }}
-           JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Required for uploading code scanning
-         with:
-          oidc-provider-name: github-jfrog 
-          oidc-audience: my-aud
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 16
+    
+    - name: Setup JFrog CLI OIDC
+      uses: jfrog/setup-jfrog-cli@v4
+      id: setup-cli
+      env:
+        JF_URL: ${{ vars.JF_URL }}
+        JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        oidc-provider-name: github-jfrog
+        oidc-audience: my-aud
 
-       - name: Setup Node npm
-         uses: actions/setup-node@v4
+    - name: Set CLI Config (OIDC)
+      run: |
+        # Add CLI server with OIDC auth
+        jf config add my-server \
+          --artifactory-url=$JF_URL \
+          --auth-type=oidc \
+          --interactive=false
+        
+        # Configure npm resolver/deploy repos
+        jf npm-config \
+          --repo-resolve=$VIRTUAL_REPO \
+          --repo-deploy=$LOCAL_REPO \
+          --server-id-resolve=my-server \
+          --server-id-deploy=my-server
 
-       - name: Configure JFrog NPM
-         run: |
-           jf c add my-artifactory-server --url=$JF_URL --access-token=${{ secrets.GITHUB_TOKEN }} --interactive=false
-           jf npm-config --global --repo-resolve=$VIRTUAL_REPO --repo-deploy=$LOCAL_REPO --server-id-resolve=my-server --server-id-deploy=my-server
-
-           
-      #  - name: Set CLI Config
-      #    run: |
-      #       jf npm-config --global --repo-resolve virtual-tetris-game --repo-deploy tetris-game
-        #jf npm-config --global=true --repo-resolve=tetris-game --repo-deploy=tetris-game
-
-           
-       - name: Install Dependencies
-         run: |
-            jf npm install 
+    - name: Install Dependencies
+      run: |
+        jf npm install
            
        #- name: Run tests
          #run: npm test
          
-       - name: Publish p
-         run: jf npm publish
+     - name: Publish p
+       run: jf npm publish
          
-       - name: Publish Build info With JFrog CLI
-         run: |
+     - name: Publish Build info With JFrog CLI
+       run: |
           # Collect environment variables for the build
           jf rt build-collect-env
           # Collect VCS details from git and add them to the build

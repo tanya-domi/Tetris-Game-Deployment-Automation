@@ -73,12 +73,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-         
-      - name: Install JFrog CLI
-        run: |
-          curl -fL https://getcli.jfrog.io | sh
-          chmod +x jfrog
-          sudo mv jfrog /usr/local/bin/
+
+      - name: Clean npmrc
+        run: rm -f ~/.npmrc
 
       - name: Setup JFrog CLI OIDC
         uses:  jfrog/setup-jfrog-cli@v4

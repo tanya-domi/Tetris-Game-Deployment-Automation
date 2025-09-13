@@ -90,38 +90,25 @@ jobs:
 
     - name: Set CLI Config (OIDC)
       run: |
-        # Add CLI server with OIDC auth
-        jf config add my-server \
-          --artifactory-url=$JF_URL \
-          --auth-type=oidc \
-          --interactive=false
-        
-        # Configure npm resolver/deploy repos
-        jf npm-config \
-          --repo-resolve=$VIRTUAL_REPO \
-          --repo-deploy=$LOCAL_REPO \
-          --server-id-resolve=my-server \
-          --server-id-deploy=my-server
+        jf config add my-server --artifactory-url=$JF_URL --auth-type=oidc --interactive=false
+        jf npm-config --repo-resolve=$VIRTUAL_REPO --repo-deploy=$LOCAL_REPO --server-id-resolve=my-server --server-id-deploy=my-server
 
-      - name: Install Dependencies
+
+    - name: Install Dependencies
         run: |
           jf npm install
-
            
-       #- name: Run tests
-         #run: npm test
+    #- name: Run tests
+       #run: npm test
          
-     - name: Publish p
-       run: jf npm publish
+    - name: Publish p
+      run: jf npm publish
          
-     - name: Publish Build info With JFrog CLI
-       run: |
-          # Collect environment variables for the build
-          jf rt build-collect-env
-          # Collect VCS details from git and add them to the build
-          jf rt build-add-git
-          # Publish build info
-          jf rt build-publish
+    - name: Publish Build info With JFrog CLI
+      run: |
+        jf rt build-collect-env
+        jf rt build-add-git
+        jf rt build-publish
 
   # docker-push:
   #   runs-on: [Linux]

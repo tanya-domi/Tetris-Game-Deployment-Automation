@@ -164,7 +164,7 @@ jobs:
         
       - name: Add docker package to JFrog build info
         run: |
-          echo "${{ vars.JF_URL }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}" > metadata.json
+          echo "{\"image\": \"${{ secrets.DOCKER_REGISTRY }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}\"}" > metadata.json
           jf rt build-docker-create ${{ env.DOCKER_REPO }} --image-file metadata.json
            
       - name: Publish build info

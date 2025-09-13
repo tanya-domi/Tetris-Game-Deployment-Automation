@@ -60,7 +60,7 @@ jobs:
 
       # - name: Trivy file scan
       #   run: trivy fs . > trivyfs.txt
-      
+
   publish-build:
     runs-on: ubuntu-latest
     needs: [sonar]
@@ -106,7 +106,6 @@ jobs:
 
       - name: Install Dependencies
         run: jf npm install
-
   
 
   # publish-build:

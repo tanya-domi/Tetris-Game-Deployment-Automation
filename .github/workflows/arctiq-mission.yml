@@ -85,6 +85,12 @@ jobs:
            
        - name: Setup Node npm
          uses: actions/setup-node@v4
+
+       - uses: jfrog/setup-jfrog-cli@v4
+         id: jf-cli
+         with:
+            version: latest
+            oidc: true
            
        - name: Set CLI Config
          run: | #jf npm-config --global=true --repo-resolve=arctiq-npm --repo-deploy=arctiq-npm

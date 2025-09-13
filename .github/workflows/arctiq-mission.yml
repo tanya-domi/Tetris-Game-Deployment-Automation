@@ -60,7 +60,7 @@ jobs:
 
       # - name: Trivy file scan
       #   run: trivy fs . > trivyfs.txt
-
+jobs:
   publish-build:
   permissions:
     id-token: write

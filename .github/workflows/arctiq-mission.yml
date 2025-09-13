@@ -163,7 +163,7 @@ jobs:
   #           else
   #           echo "Trivy scan passed with medium, low, or unknown vulnerabilities."
   #           fi
-          
+  #
 
   # deploy:
   #  needs: [sonar, docker-push, Image-scan]   

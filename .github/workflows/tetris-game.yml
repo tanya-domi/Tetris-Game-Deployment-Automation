@@ -240,7 +240,7 @@ jobs:
     #       kubectl get svc | grep amazon | awk '{print $4}' | cat > arctiq.txt
     #       cat arctiq.txt
 
-Update-K8s:
+  Update-K8s:
     runs-on: [Linux]
     needs: [sonar, docker-push, Image-scan, deploy]  
 

@@ -230,7 +230,7 @@ jobs:
   
      - name: Deploy and run Tetris game container
        run: |
-         docker run -d --name game -p 3000:3000 -e HOST=0.0.0.0 ${{ secrets.DOCKER_REGISTRY }}/dominic-docker/tetris-game:latest
+         docker run -d --name tetris-game1 -p 3000:3000 -e HOST=0.0.0.0 ${{ secrets.DOCKER_REGISTRY }}/dominic-docker/tetris-game:latest
          echo "Waiting for container to start..."
          sleep 10
 

@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: tetris
-        image: ${{ secrets.DOCKER_REGISTRY }}/dominic-docker/tetris-game:latest
+        image: admin/dominic-docker/tetris-game:latest
         ports:
         - containerPort: 3000   # Use port 3000

@@ -197,7 +197,7 @@ jobs:
         run: |
           IMAGE="${{ secrets.DOCKER_IMAGE }}"
           trivy image $IMAGE > trivyimage.txt || true
-          
+
       - name: Check Trivy scan result
         run: |
           SCAN_RESULT=$(cat trivyimage.txt)
@@ -241,4 +241,4 @@ jobs:
   #
 # Adding Permission Settings is required
 # The attribute id-tokon: write must be included in the GitHub Actions workflows Permission section. Learn more
-#### 
+#### ##

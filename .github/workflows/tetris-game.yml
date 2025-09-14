@@ -256,7 +256,7 @@ jobs:
         run: |
           git config --global user.email "sheytanyadominic@gmail.com"
           git config --global user.name "Dominic-tanya"
-          git add kubernetes-manifest/deployment.yaml
+          git add Kubernetes-manifest/deployment.yaml
           git commit -m "[CI]: Update deployment image tag"
           git push origin HEAD:main -f
 

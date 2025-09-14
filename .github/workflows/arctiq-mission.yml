@@ -213,7 +213,6 @@ jobs:
             fi
           fi
 
-
   deploy:
    needs: [sonar, docker-push, Image-scan]   
    runs-on: [Linux]
@@ -228,34 +227,17 @@ jobs:
      - name: Image scan
        run: trivy image ${{ secrets.DOCKER_REGISTRY }}/dominic-docker/tetris-game:latest > trivyimagedeploy.txt  
   
-     - name: Deploy and run Tetris game container
-       run: |
-         docker run -d --name tetris-game1 -p 3000:3000 -e HOST=0.0.0.0 ${{ secrets.DOCKER_REGISTRY }}/dominic-docker/tetris-game:latest
-         echo "Waiting for container to start..."
-         sleep 10
+    #  - name: Deploy and run Tetris to container
+    #    run: docker run -d --name tetris-game1 -p 3000:3000 ${{ secrets.DOCKER_REGISTRY }}/dominic-docker/tetris-game:latest
+    
+      - name: Update kubeconfig
+        run: aws eks --region us-east-1 update-kubeconfig --name EKS_CLOUD
 
-       # Test if the app is responding
-     - name: Test if the app is responding
-       run: |
-        RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000)
-        echo "HTTP response code: $RESPONSE"
+      - name: Deploy to kubernetes
+        run: kubectl apply -f deployment.yml
 
-        if [ "$RESPONSE" -eq 200 ]; then
-          echo "Tetris game is running successfully!"
-        else
-          echo "Failed to reach Tetris game. Response code: $RESPONSE"
-          docker logs game
-          exit 1
-        fi
-
-      # - name: Update kubeconfig
-      #   run: aws eks --region us-east-1 update-kubeconfig --name EKS_CLOUD
-
-      # - name: Deploy to kubernetes
-      #   run: kubectl apply -f deployment.yml
-
-      # - name: Echo Load Balancer
-      #   run: |
-      #     kubectl get svc | grep amazon | awk '{print $4}' | cat > arctiq.txt
-      #     cat arctiq.txt
+      - name: Echo Load Balancer
+        run: |
+          kubectl get svc | grep amazon | awk '{print $4}' | cat > arctiq.txt
+          cat arctiq.txt
   

@@ -246,7 +246,7 @@ jobs:
           echo "Failed to reach Tetris game. Response code: $RESPONSE"
           docker logs game
           exit 1
-       fi
+        fi
 
       # - name: Update kubeconfig
       #   run: aws eks --region us-east-1 update-kubeconfig --name EKS_CLOUD

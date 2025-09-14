@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: tetris
-          image: 13.60.17.38:8081/dominic-docker/tetris-game:latest
+          image: 13.60.17.38:8081/dominic-docker/tetris-game:17717122765
           ports:
             - containerPort: 3000
       imagePullSecrets:

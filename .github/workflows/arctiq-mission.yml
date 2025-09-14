@@ -214,31 +214,46 @@ jobs:
           fi
 
 
-  # deploy:
-  #  needs: [sonar, docker-push, Image-scan]   
-  #  runs-on: [Linux]
-  #  steps:
-  #     - name: Pull Docker image
-  #       run: |
-  #         docker pull ${{ secrets.JFROG_URL }}/${{ secrets.DOCKER_REPO }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
+  deploy:
+   needs: [sonar, docker-push, Image-scan]   
+   runs-on: [Linux]
+   steps:
+      - name: Log in to JFrog Docker registry
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin ${{ secrets.DOCKER_REGISTRY }}
 
-  #     - name: Image scan
-  #       run: trivy image jndamito/joshrepo:arctiqgame > trivyimagedeploy.txt  
+      - name: Pull Docker image From JFrog
+        run: docker pull ${{ secrets.DOCKER_REGISTRY }}/dominic-docker/tetris-game:latest
+        
+      - name: Image scan
+        run: trivy image ${{ secrets.DOCKER_REGISTRY }}/dominic-docker/tetris-game:latest > trivyimagedeploy.txt  
   
-  #     #- name: Deploy to container
-  #       #run: docker run -d --name game -p 3000:3000 jndamito/joshrepo:arctiqgame
+      - name: Deploy and run Tetris game container
+       run: |
+        docker run -d --name game -p 3000:3000 ${{ secrets.DOCKER_REGISTRY }}/dominic-docker/tetris-game:latest
+        echo "Waiting for container to start..."
+        sleep 10
 
-  #     - name: Update kubeconfig
-  #       run: aws eks --region us-east-1 update-kubeconfig --name EKS_CLOUD
+       # Test if the app is responding
+         RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000)
+         echo "HTTP response code: $RESPONSE"
 
-  #     - name: Deploy to kubernetes
-  #       run: kubectl apply -f deployment.yml
+         if [ "$RESPONSE" -eq 200 ]; then
+          echo "Tetris game is running successfully!"
+         else
+           echo "Failed to reach Tetris game. Response code: $RESPONSE"
+           docker logs game
+           exit 1
+         fi
 
-  #     - name: Echo Load Balancer
-  #       run: |
-  #         kubectl get svc | grep amazon | awk '{print $4}' | cat > arctiq.txt
-  #         cat arctiq.txt
-  #
-# Adding Permission Settings is required
-# The attribute id-tokon: write must be included in the GitHub Actions workflows Permission section. Learn more
-#### ##
+
+      # - name: Update kubeconfig
+      #   run: aws eks --region us-east-1 update-kubeconfig --name EKS_CLOUD
+
+      # - name: Deploy to kubernetes
+      #   run: kubectl apply -f deployment.yml
+
+      # - name: Echo Load Balancer
+      #   run: |
+      #     kubectl get svc | grep amazon | awk '{print $4}' | cat > arctiq.txt
+      #     cat arctiq.txt
+  

@@ -13,7 +13,12 @@ spec:
         app: tetris
     spec:
       containers:
-      - name: tetris
-        image: admin/dominic-docker/tetris-game:latest
-        ports:
-        - containerPort: 3000   
+        - name: tetris
+          image: 13.60.17.38:8081/dominic-docker/tetris-game:latest
+          ports:
+            - containerPort: 3000
+      imagePullSecrets:
+        - name: jfrog-secret
+
+
+

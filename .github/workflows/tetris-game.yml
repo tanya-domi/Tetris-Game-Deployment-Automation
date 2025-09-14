@@ -243,7 +243,7 @@ jobs:
 
       - name: Update tags in K8s deployment manifest
         run: |
-          sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/dominic-docker/tetris-game:latest|" Kubernetes-manifest/deployment.yaml
+          sed -i "s|image: .*|image: ${{ secrets.DOCKER_REGISTRY }}/dominic-docker/tetris-game:latest|" Kubernetes-manifest/deployment.yaml
                 
       - name: commit and push changes
         run: |

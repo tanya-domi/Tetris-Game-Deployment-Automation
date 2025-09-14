@@ -1,49 +1,47 @@
-
-# Use the official Node.js 16 image as the base image
+# Use the official Node.js 16 image
 FROM node:16
 
-# Set the working directory inside the container
+# Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json (or yarn.lock) to the container
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install project dependencies
+# Install all dependencies 
 RUN npm install
 
-# Copy the rest of the application code to the container
+# Copy the rest of the application code
 COPY . .
 
-# Build the React app
-RUN npm run build
-
-# Expose the port that the app will run on
+# Expose React development server port
 EXPOSE 3000
 
-# Start the React app when the container starts
-CMD [ "npm", "start" ]
+# Start the React app in development mode
+CMD ["npm", "start"]
 
 
-# # Use Node.js 16 LTS image
+
+# # Use the official Node.js 16 image as the base image
 # FROM node:16
 
-# # Set working directory
+# # Set the working directory inside the container
 # WORKDIR /app
 
-# # Copy only package files first to leverage Docker cache
+# # Copy package.json and package-lock.json (or yarn.lock) to the container
 # COPY package*.json ./
 
-# # Install dependencies (cached if package*.json unchanged)
-# RUN npm ci --legacy-peer-deps
+# # Install project dependencies
+# RUN npm install
 
-# # Copy the rest of the source code
+# # Copy the rest of the application code to the container
 # COPY . .
 
 # # Build the React app
 # RUN npm run build
 
-# # Expose the port
+# # Expose the port that the app will run on
 # EXPOSE 3000
 
-# # Start the app
-# CMD ["npm", "start"]
+# # Start the React app when the container starts
+# CMD [ "npm", "start" ]
+

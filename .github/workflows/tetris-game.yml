@@ -17,7 +17,7 @@ permissions:
 env:
   DOCKER_REPO: dominic-docker
   IMAGE_NAME: tetris-game
-  JF_URL: ${{ secrets.JF_URL }}  # Use secrets for sensitive data
+  JF_URL: ${{ secrets.JF_URL }}  
   DOCKER_BUILD_SUMMARY: false
   DOCKER_BUILD_RECORD_UPLOAD: false
   JFROG_CLI_LOG_LEVEL: DEBUG
@@ -229,15 +229,36 @@ jobs:
   
     #  - name: Deploy and run Tetris to container
     #    run: docker run -d --name tetris-game1 -p 3000:3000 ${{ secrets.DOCKER_REGISTRY }}/dominic-docker/tetris-game:latest
-    
-      - name: Update kubeconfig
-        run: aws eks --region us-east-1 update-kubeconfig --name EKS_CLOUD
+    #  - name: Update kubeconfig
+    #    run: aws eks --region eu-north-1 update-kubeconfig --name hr-dev-eks-cloud
 
-      - name: Deploy to kubernetes
-        run: kubectl apply -f deployment.yml
+    #  - name: Deploy to kubernetes
+    #    run: kubectl apply -f deployment.yml
 
-      - name: Echo Load Balancer
+    #  - name: Echo Load Balancer
+    #    run: |
+    #       kubectl get svc | grep amazon | awk '{print $4}' | cat > arctiq.txt
+    #       cat arctiq.txt
+
+Update-K8s:
+    runs-on: [Linux]
+    needs: [sonar, docker-push, Image-scan, deploy]  
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - name: Update tags in K8s deployment manifest
         run: |
-          kubectl get svc | grep amazon | awk '{print $4}' | cat > arctiq.txt
-          cat arctiq.txt
+          sed -i "s|image: .*|image: ${{ secrets.DOCKER_REGISTRY }}/dominic-docker/tetris-game:latest|" kubernetes-manifest/deployment.yaml
+                
+      - name: commit and push changes
+        run: |
+          git config --global user.email "sheytanyadominic@gmail.com"
+          git config --global user.name "Dominic-tanya"
+          git add kubernetes-manifest/deployment.yaml
+          git commit -m "[CI]: Update deployment image tag"
+          git push origin HEAD:main -f
+
+
   

@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: react-tetris-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+spec:
+  rules:
+    - host: tetris.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: react-tetris-service
+                port:
+                  number: 80

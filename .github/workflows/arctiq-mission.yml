@@ -199,7 +199,6 @@ jobs:
           trivy image $IMAGE > trivyimage.txt || true
           
       - name: Check Trivy scan result
-      - name: Check Trivy scan result
         run: |
           SCAN_RESULT=$(cat trivyimage.txt)
           TRIVY_EXIT_CODE=$?

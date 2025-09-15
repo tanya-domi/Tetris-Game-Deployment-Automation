@@ -1,4 +1,4 @@
-# Arctiq Mission Project
+# Tetris Game Project
 
 > Fully responsive tetris game built with ReactJS
 

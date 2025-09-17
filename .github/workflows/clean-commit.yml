@@ -9,12 +9,12 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0 # Fetch all history for all branches and tags
 
     - name: Set up Java
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v4
       with:
         distribution: 'adopt'
         java-version: '11'
@@ -42,7 +42,7 @@ jobs:
       run: sudo apt-get install -y jq
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: '3.x'
 
@@ -92,7 +92,7 @@ jobs:
         git push --force
 
     - name: Upload Gitleaks report
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: gitleaks-report
         path: gitleaks_report.json

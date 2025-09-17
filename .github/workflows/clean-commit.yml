@@ -16,8 +16,12 @@ jobs:
     - name: Set up Java
       uses: actions/setup-java@v4
       with:
-        distribution: 'adopt'
+        distribution: 'temurin'
         java-version: '11'
+
+    - name: Configure Git to use SSH
+      run: |
+        git remote set-url origin git@github.com:tanya-domi/Tetris-Game-Deployment-Automation.git
         
     - name: Set up SSH
       run: |

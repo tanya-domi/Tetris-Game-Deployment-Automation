@@ -16,6 +16,8 @@ COPY . .
 # Expose React development server port
 EXPOSE 3000
 
+RUN chmod -R 755 /app
+
 # Start the React app in development mode
 CMD ["npm", "start"]
 

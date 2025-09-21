@@ -115,5 +115,3 @@ It is worth noting that this process can also be automated using Terraform, enab
 
 
 
-Create users and groups within Artifactory. Assign users to groups so they automatically inherit group-level permissions. Then, configure appropr
-iate permissions for the groups to ensure secure and role-based access control.

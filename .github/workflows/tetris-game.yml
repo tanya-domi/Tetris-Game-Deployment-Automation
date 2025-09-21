@@ -85,10 +85,9 @@ jobs:
         id: setup-cli
         env:  
           JF_URL: ${{ vars.JF_URL }}
-          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           oidc-provider-name: github-jfrog
-          oidc-audience: my-aud
+          oidc-audience: my-audience
            
       - name: Setup Node npm
         uses: actions/setup-node@v4
@@ -125,10 +124,9 @@ jobs:
         id: setup-cli
         env:
           JF_URL: ${{ vars.JF_URL }}
-          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           oidc-provider-name: github-jfrog
-          oidc-audience: my-aud
+          oidc-audience: my-audience
         
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -178,10 +176,9 @@ jobs:
         id: setup-cli
         env:
           JF_URL: ${{ vars.JF_URL }}
-          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           oidc-provider-name: github-jfrog
-          oidc-audience: my-aud
+          oidc-audience: my-audience
 
       - name: Authenticate Docker
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin ${{ secrets.DOCKER_REGISTRY }}

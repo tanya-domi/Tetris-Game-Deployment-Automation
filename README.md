@@ -33,7 +33,8 @@ With this pipeline, we achieve a secure, automated, and production-ready CI/CD p
 
 JFrog’s integration of OpenID Connect (OIDC) with GitHub Actions allows organizations to establish a secure, trust-based relationship between their CI/CD workflows and the JFrog Platform. This integration streamlines authentication by eliminating the need for manually creating and managing tokens for each GitHub Action, reducing operational overhead and enhancing security.
 
-In this project, I will demonstrate how to implement and leverage this integration to enable seamless, efficient, and secure token management within GitHub Actions.
+In this project, I will demonstrate how to implement and leverage this integration to enable seamless, efficient, and secure token management within GitHub Actions.We have already set kubernetes cluster in EKS 
+[![VPC Deploy](https://github.com/tanya-domi/tooling/actions/workflows/vpc.yaml/badge.svg)](https://github.com/tanya-domi/tooling/actions/workflows/vpc.yaml) [![EKS Deploy](https://github.com/tanya-domi/tooling/actions/workflows/eks.yaml/badge.svg)](https://github.com/tanya-domi/tooling/actions/workflows/eks.yaml) [![IRSA Deploy](https://github.com/tanya-domi/tooling/actions/workflows/eks-IRSA.yaml/badge.svg)](https://github.com/tanya-domi/tooling/actions/workflows/eks-IRSA.yaml)  [![Loadbalancer Controller Deploy](https://github.com/tanya-domi/tooling/actions/workflows/Install-Lbc.yaml/badge.svg)](https://github.com/tanya-domi/tooling/actions/workflows/Install-Lbc.yaml)  [![Argocd Deploy](https://github.com/tanya-domi/tooling/actions/workflows/Setup-Argcd.yaml/badge.svg)](https://github.com/tanya-domi/tooling/actions/workflows/Setup-Argcd.yaml) [![cluster-autoscaler Deploy](https://github.com/tanya-domi/tooling/actions/workflows/cluster-autoscaler.yaml/badge.svg)](https://github.com/tanya-domi/tooling/actions/workflows/cluster-autoscaler.yaml)
 
 Step 1:
 Install the JFrog Artifactory Pro X Platform on Ubuntu 22.04.
@@ -54,13 +55,17 @@ Create users and groups within Artifactory. Assign users to groups so they autom
 # JFrog – GitHub OIDC Integration
 Let’s say you have your own project hosted on GitHub with workflows running on GitHub Actions — that’s already powerful. But when you combine it with JFrog Artifactory, it becomes even more impactful.
 For example, a common setup looks like this:
+
 `- name: Setup JFrog CLI
   uses: jfrog/setup-jfrog-cli@v3
   env:
     JF_URL: ${{ secrets.JF_URL }}
     JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
 `
+
 The challenge here is that your token is stored manually in GitHub secrets. Imagine if that token gets revoked, deleted by mistake, or worse, compromised and exposed — that creates a serious security risk.
+
+![Image](https://github.com/user-attachments/assets/80198cbb-1afe-4859-8f23-deb109f97bbf)
 
 The solution is JFrog – GitHub OIDC integration, which allows us to dynamically generate short-lived tokens with fine-grained access control. You decide whether a token should only allow publish, fetch, or admin actions, and you can scope tokens to specific users, groups, or workflows.
 
@@ -81,10 +86,14 @@ Step 4:
 Create your first Identity Mapping. You can define multiple mappings, each with different priorities. This gives you flexibility to assign the most relevant token depending on claims provided by GitHub’s OIDC provider.
 -The claim JSON is the trust object GitHub sends to JFrog.
 -JFrog uses this to map back tokens with the right permissions.
+
 Step 5:
-For example, you can map a claim such as workflow: my-workflow. If the workflow name changes, the token will no longer be granted. That’s why it’s critical to verify all details in the claim.
+For example, you can map a claim such as workflow: my-workflow. If the workflow name changes, the token will no longer be granted. 
+That’s why it’s critical to verify all details in the claim.
 - Save the identity mapping with the desired token scope.
 - Configure the token expiration time according to your security requirements.
+
+![Image](https://github.com/user-attachments/assets/3be2ad9b-b3c2-4234-8cbf-33677da803fc)
 
 Step 6:
 Update your GitHub workflow to request an ID token instead of relying on stored secrets. This allows the workflow to exchange the ID token for a JFrog access token — no static tokens stored in GitHub.

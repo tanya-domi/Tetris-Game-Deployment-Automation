@@ -45,7 +45,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       
-      # If you wish to fail your job when the Quality Gate parameters are not met.
+      # If you wish to fail your job when the Quality Gate parameters are not met.!
       # - uses: sonarsource/sonarqube-quality-gate-action@master
       #   timeout-minutes: 5
       #   env:

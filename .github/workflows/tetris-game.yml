@@ -85,6 +85,7 @@ jobs:
         id: setup-cli
         env:  
           JF_URL: ${{ vars.JF_URL }}
+          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           oidc-provider-name: github-jfrog
           oidc-audience: my-audience
@@ -124,6 +125,7 @@ jobs:
         id: setup-cli
         env:
           JF_URL: ${{ vars.JF_URL }}
+          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           oidc-provider-name: github-jfrog
           oidc-audience: my-audience
@@ -176,6 +178,7 @@ jobs:
         id: setup-cli
         env:
           JF_URL: ${{ vars.JF_URL }}
+          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           oidc-provider-name: github-jfrog
           oidc-audience: my-audience

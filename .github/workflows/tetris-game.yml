@@ -1,6 +1,6 @@
 name: "JFrog NPM Integration Tetris_Game"
 on:
-  workflow_dispatch: {}
+  workflow_dispatch: null
   pull_request:
     branches:
       - main
@@ -86,7 +86,6 @@ jobs:
         id: setup-cli
         env:  
           JF_URL: ${{ vars.JF_URL }}
-          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           oidc-provider-name: github-jfrog
           oidc-audience: my-aud
@@ -126,7 +125,6 @@ jobs:
         id: setup-cli
         env:
           JF_URL: ${{ vars.JF_URL }}
-          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           oidc-provider-name: github-jfrog
           oidc-audience: my-aud
@@ -179,7 +177,6 @@ jobs:
         id: setup-cli
         env:
           JF_URL: ${{ vars.JF_URL }}
-          JF_GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           oidc-provider-name: github-jfrog
           oidc-audience: my-aud
